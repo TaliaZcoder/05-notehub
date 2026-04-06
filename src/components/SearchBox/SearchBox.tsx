@@ -2,6 +2,7 @@ interface SearchBoxProps {
   onChange: (value: string) => void;
 }
 
+
 export default function SearchBox({ onChange }: SearchBoxProps) {
   return (
     <input
