@@ -6,6 +6,7 @@ import { useDebouncedCallback } from "use-debounce";
 import css from "./App.module.css";
 
 import type { Note } from "../../types/note";
+
 import {
   fetchNotes,
   createNote,
