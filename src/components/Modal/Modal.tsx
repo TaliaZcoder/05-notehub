@@ -1,95 +1,50 @@
-import { Formik, Form, Field, ErrorMessage } from "formik";
-import * as Yup from "yup";
-import css from "./NoteForm.module.css";
+import { useEffect } from "react";
+import { createPortal } from "react-dom";
+import css from "./Modal.module.css";
 
-interface NoteFormValues {
-  title: string;
-  content: string;
-  tag: string;
+interface ModalProps {
+  children: React.ReactNode;
+  onClose: () => void;
 }
 
-interface NoteFormProps {
-  onSubmit: (values: NoteFormValues) => void;
-  onCancel: () => void;
-}
+export default function Modal({ children, onClose }: ModalProps) {
+  useEffect(() => {
+    const handleEsc = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        onClose();
+      }
+    };
 
-const schema = Yup.object({
-  title: Yup.string().min(3).max(50).required("Required"),
-  content: Yup.string().max(500),
-  tag: Yup.string()
-    .oneOf(["Todo", "Work", "Personal", "Meeting", "Shopping"])
-    .required("Required"),
-});
+    document.addEventListener("keydown", handleEsc);
 
-export default function NoteForm({ onSubmit, onCancel }: NoteFormProps) {
-  return (
-    <Formik<NoteFormValues>
-      initialValues={{
-        title: "",
-        content: "",
-        tag: "Todo",
-      }}
-      validationSchema={schema}
-      onSubmit={(values, actions) => {
-        onSubmit(values);
-        actions.resetForm();
-      }}
+    // scroll lock
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.removeEventListener("keydown", handleEsc);
+      document.body.style.overflow = "";
+    };
+  }, [onClose]);
+
+  const handleBackdropClick = () => {
+    onClose();
+  };
+
+  const handleContentClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+  };
+
+  return createPortal(
+    <div
+      className={css.backdrop}
+      role="dialog"
+      aria-modal="true"
+      onClick={handleBackdropClick}
     >
-      <Form className={css.form}>
-        <div className={css.formGroup}>
-          <label htmlFor="title">Title</label>
-          <Field
-            id="title"
-            name="title"
-            type="text"
-            className={css.input}
-          />
-          <ErrorMessage name="title" component="span" className={css.error} />
-        </div>
-
-        <div className={css.formGroup}>
-          <label htmlFor="content">Content</label>
-          <Field
-            as="textarea"
-            id="content"
-            name="content"
-            rows={8}
-            className={css.textarea}
-          />
-          <ErrorMessage name="content" component="span" className={css.error} />
-        </div>
-
-        <div className={css.formGroup}>
-          <label htmlFor="tag">Tag</label>
-          <Field
-            as="select"
-            id="tag"
-            name="tag"
-            className={css.select}
-          >
-            <option value="Todo">Todo</option>
-            <option value="Work">Work</option>
-            <option value="Personal">Personal</option>
-            <option value="Meeting">Meeting</option>
-            <option value="Shopping">Shopping</option>
-          </Field>
-          <ErrorMessage name="tag" component="span" className={css.error} />
-        </div>
-
-        <div className={css.actions}>
-          <button
-            type="button"
-            className={css.cancelButton}
-            onClick={onCancel}
-          >
-            Cancel
-          </button>
-
-          <button type="submit" className={css.submitButton}>
-            Create note
-          </button>
-        </div>
-      </Form>
-    </Formik>
+      <div className={css.modal} onClick={handleContentClick}>
+        {children}
+      </div>
+    </div>,
+    document.body
   );
 }
