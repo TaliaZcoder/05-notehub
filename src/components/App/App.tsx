@@ -8,7 +8,8 @@ import { useDebouncedCallback } from "use-debounce";
 
 import css from "./App.module.css";
 
-import type { Note } from "../../types/note";
+// import type { Note } from "../../types/note";
+  import type { NoteFormValues } from "../NoteForm/NoteForm";
 
 import {
   fetchNotes,
@@ -62,9 +63,11 @@ export default function App() {
     },
   });
 
-  const handleCreate = (note: Omit<Note, "id">) => {
-    createMutation.mutate(note);
-  };
+
+
+const handleCreate = (values: NoteFormValues) => {
+  createMutation.mutate(values);
+};
 
   return (
     <div className={css.app}>
