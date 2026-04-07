@@ -9,5 +9,7 @@ export interface Note {
   id: string;
   title: string;
   content: string;
-  tag: string;
+  tag: NoteTag;
+  createdAt: string;
+  updatedAt: string; 
 }
