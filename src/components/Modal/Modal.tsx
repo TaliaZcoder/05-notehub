@@ -17,7 +17,6 @@ export default function Modal({ children, onClose }: ModalProps) {
 
     document.addEventListener("keydown", handleEsc);
 
-    // scroll lock
     document.body.style.overflow = "hidden";
 
     return () => {
